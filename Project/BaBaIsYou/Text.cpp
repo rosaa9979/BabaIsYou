@@ -17,7 +17,7 @@ using namespace std;
 Text::Text(string _id, wstring _image_path, Color _color, TextType _type, ElementStatus _effect, ElementStatus _status)
 	: Element(_id, _image_path, _color, _status)
 {
-	type = _type; // �⺻�� ����
+	type = _type;
 	effect = _effect;
 }
 
@@ -37,28 +37,25 @@ ElementStatus Text::GetEffect() const
 
 string Text::GetObjString() const
 {
-    // Noun Ÿ���� �ƴ� ���� object�� �ƴϹǷ� �� ���ڿ� ��ȯ
     if (GetTextType() != TextType::Noun) {
         return "";
     }
 
-    const string& id = GetId(); // ��: "Text_Wall"
+    const string& id = GetId();
     const string prefix = "text_";
     std::string result;
 
-    // "Text_"�� �����ϸ� ���ξ� ����
     if (id.rfind(prefix, 0) == 0) {
-        result = id.substr(prefix.length()); // ��: "Wall"
+        result = id.substr(prefix.length()); 
     }
     else {
-        result = id; // ���������� ���ξ� ������ �״�� ���
+        result = id; 
     }
 
-    // �ҹ��� ��ȯ
     std::transform(result.begin(), result.end(), result.begin(),
         [](unsigned char c) { return std::tolower(c); });
 
-    return result; // ���: "wall"
+    return result; 
 }
 
 MaterialType Text::ToMaterialType() const {
@@ -79,7 +76,7 @@ void Text::Render(const RenderContext& ctx)
 bool Text::IsActiveInStage(Stage* stage) const
 {
     for (const auto& rulePtr : stage->GetRules()) {
-        const Rule* rule = rulePtr.get();  // ✅ unique_ptr → raw pointer
+        const Rule* rule = rulePtr.get();
 
         if (auto* basic = dynamic_cast<const BasicRule*>(rule)) {
             if (basic->GetSubject() == this || basic->GetVerb() == this || basic->GetPredicate() == this) {

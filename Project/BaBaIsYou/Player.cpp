@@ -30,8 +30,6 @@ void Player::Move(Direction dir) {
 	case Direction::Down:  dy = 1; break;
 	}
 
-	
-	// ��� ���� ���� ��Ҹ� �̵���Ŵ
 	for (auto& subject : GameManager::getInstance().GetCurrentStage()->GetElements())
 	{
 		if (!subject->HasStatus(ElementStatus::You)) continue;
@@ -39,9 +37,7 @@ void Player::Move(Direction dir) {
 		int newX = subject->GetX() + dx;
 		int newY = subject->GetY() + dy;
 
-		//if (subject->CanMove(dx, dy))
-		subject->Move(dx, dy); // ���� ��ġ
-		// element->SetTarget(newX, newY); // �ִϸ��̼ǿ� ���� ��ġ�� ���� �ִٸ�
+		subject->Move(dx, dy);
 	}
 
 	GameManager::getInstance().GetCurrentStage()->UpdateRule();

@@ -1,0 +1,285 @@
+{
+  "stage_info": {
+    "name": "Stage 0 - Tutorial",
+    "description": "Learn the basic rules: BABA IS YOU, FLAG IS WIN, WALL IS STOP, ROCK IS PUSH"
+  },
+  "stage_size": {
+    "rows": 18,
+    "cols": 33
+  },
+  "elements": [
+    {
+      "name": "BaBa",
+      "position": {
+        "x": 13,
+        "y": 11
+      }
+    },
+    {
+      "name": "Flag",
+      "position": {
+        "x": 21,
+        "y": 11
+      }
+    },
+    {
+      "name": "Wall1",
+      "position": {
+        "x": 12,
+        "y": 9
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 13,
+        "y": 9
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 14,
+        "y": 9
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 15,
+        "y": 9
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 16,
+        "y": 9
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 17,
+        "y": 9
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 18,
+        "y": 9
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 19,
+        "y": 9
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 20,
+        "y": 9
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 21,
+        "y": 9
+      }
+    },
+    {
+      "name": "Wall3",
+      "position": {
+        "x": 22,
+        "y": 9
+      }
+    },
+    {
+      "name": "Wall1",
+      "position": {
+        "x": 12,
+        "y": 13
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 13,
+        "y": 13
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 14,
+        "y": 13
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 15,
+        "y": 13
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 16,
+        "y": 13
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 17,
+        "y": 13
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 18,
+        "y": 13
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 19,
+        "y": 13
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 20,
+        "y": 13
+      }
+    },
+    {
+      "name": "Wall2",
+      "position": {
+        "x": 21,
+        "y": 13
+      }
+    },
+    {
+      "name": "Wall3",
+      "position": {
+        "x": 22,
+        "y": 13
+      }
+    },
+    {
+      "name": "Rock",
+      "position": {
+        "x": 17,
+        "y": 10
+      }
+    },
+    {
+      "name": "Rock",
+      "position": {
+        "x": 17,
+        "y": 11
+      }
+    },
+    {
+      "name": "Rock",
+      "position": {
+        "x": 17,
+        "y": 12
+      }
+    },
+    {
+      "name": "Text_BABA",
+      "position": {
+        "x": 12,
+        "y": 7
+      }
+    },
+    {
+      "name": "Text_FLAG",
+      "position": {
+        "x": 20,
+        "y": 7
+      }
+    },
+    {
+      "name": "Text_WALL",
+      "position": {
+        "x": 12,
+        "y": 15
+      }
+    },
+    {
+      "name": "Text_ROCK",
+      "position": {
+        "x": 20,
+        "y": 15
+      }
+    },
+    {
+      "name": "Text_IS",
+      "position": {
+        "x": 13,
+        "y": 7
+      }
+    },
+    {
+      "name": "Text_IS",
+      "position": {
+        "x": 21,
+        "y": 7
+      }
+    },
+    {
+      "name": "Text_IS",
+      "position": {
+        "x": 13,
+        "y": 15
+      }
+    },
+    {
+      "name": "Text_IS",
+      "position": {
+        "x": 21,
+        "y": 15
+      }
+    },
+    {
+      "name": "Text_YOU",
+      "position": {
+        "x": 14,
+        "y": 7
+      }
+    },
+    {
+      "name": "Text_WIN",
+      "position": {
+        "x": 22,
+        "y": 7
+      }
+    },
+    {
+      "name": "Text_STOP",
+      "position": {
+        "x": 14,
+        "y": 15
+      }
+    },
+    {
+      "name": "Text_PUSH",
+      "position": {
+        "x": 22,
+        "y": 15
+      }
+    }
+  ]
+}

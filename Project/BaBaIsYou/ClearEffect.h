@@ -12,7 +12,7 @@ struct ClearEffect {
     void Start() {
         phase = ClearPhase::CloseOut;
         timer = 0.0f;
-        radiusProgress = 0.0f;  // 중심에서부터 시작
+        radiusProgress = 0.0f;  
     }
 
     void Update(float deltaTime) {

@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include <gdiplus.h>
+#include <nlohmann/json.hpp>
 #include <memory>
 #include <sstream>
 #include <fstream>
@@ -13,6 +14,7 @@
 
 using namespace std;
 using namespace Gdiplus;
+using json = nlohmann::json;
 
 Stage::Stage(string _stage_name)
 {
@@ -22,28 +24,28 @@ Stage::Stage(string _stage_name)
 		OutputDebugString(L"Stage name is empty\n");
 
 	wstring w_stage_name(stage_name.begin(), stage_name.end());
-	info_path = L"stages/" + w_stage_name + L".txt";
+	info_path = L"stages/" + w_stage_name + L".json";
 
-	ifstream file("stages/" + stage_name + ".txt");
+	ifstream file(info_path);
 	if (!file.is_open()) {
 		OutputDebugString(L"Failed to open stage info file\n");
 		return;
 	}
 
-	string first_line;
-	if (getline(file, first_line)) {
-		istringstream iss(first_line);
-		string row_str, col_str;
-		if (getline(iss, row_str, '\t') && getline(iss, col_str, '\t')) {
-			try {
-				rows = std::stoi(row_str);
-				cols = std::stoi(col_str);
-			}
-			catch (const std::exception&) {
-				OutputDebugString(L"Failed to parse rows/cols from stage file\n");
-			}
-		}
+	try {
+		json stage_data;
+		file >> stage_data;
+
+		rows = stage_data["stage_size"]["rows"];
+		cols = stage_data["stage_size"]["cols"];
 	}
+	catch (const std::exception& e) {
+		OutputDebugString(L"Failed to parse stage info JSON\n");
+		rows = 10;
+		cols = 10;
+	}
+
+	file.close();
 
 	for (int row = 0; row < rows + 2; row++)
 	{
@@ -57,17 +59,24 @@ Stage::Stage(string _stage_name)
 	}
 }
 
-//Stage::Stage(const Stage& other) {
-//	this->stage_name = other.stage_name;
-//	this->rows = other.rows;
-//	this->cols = other.cols;
-//	//this->elements = other.elements;
-//	
-//}
-
 Stage::~Stage()
 {
+	for (Element* element : elements) {
+		if (element != nullptr) {
+			delete element;
+		}
+	}
+	elements.clear();
 
+	for (int row = 0; row < tileMap.size(); row++) {
+		for (int col = 0; col < tileMap[row].size(); col++) {
+			if (tileMap[row][col] != nullptr) {
+				delete tileMap[row][col];
+			}
+		}
+		tileMap[row].clear();
+	}
+	tileMap.clear();
 }
 
 void Stage::Init()
@@ -99,71 +108,55 @@ void Stage::Init()
 		}
 	}
 
-	vector<string> info_lines;
 	ifstream file(info_path);
-	if (file.is_open()) {
-		string line;
-
-		// 첫 줄은 rows, cols 정보이므로 건너뜀
-		getline(file, line);  // ✅ 첫 줄 skip
-
-		// 이후 줄부터 읽어서 저장
-		while (getline(file, line)) {
-			info_lines.push_back(line);
-		}
-
-		file.close();
+	if (!file.is_open()) {
+		OutputDebugString(L"Failed to open stage info file\n");
+		return;
 	}
 
-	// 두 번째 줄부터 element 추가
-	for (const auto& line : info_lines)
-	{
-		stringstream ss(line);
-		string token;
+	try {
+		json stage_data;
+		file >> stage_data;
 
-		string e_name;
-		int e_x = 0;
-		int e_y = 0;
+		if (stage_data.contains("elements") && stage_data["elements"].is_array()) {
+			for (const auto& element_data : stage_data["elements"]) {
+				string e_name = element_data["name"];
 
-		int tokenIndex = 0;
-		while (getline(ss, token, '\t')) {
-			if (tokenIndex == 0)
-				e_name = token;
-			else if (tokenIndex == 1)
-				e_x = std::stoi(token);
-			else if (tokenIndex == 2)
-				e_y = std::stoi(token);
+				int e_x = element_data["position"]["x"];
+				int e_y = element_data["position"]["y"];
 
-			tokenIndex++;
-		}
+				Element* element = GameManager::getInstance().CopyFromCatalog(e_name);
 
-		Element* element = GameManager::getInstance().CopyFromCatalog(e_name);
-		if (element != nullptr) {
-			element->SetPosition(e_x, e_y);
-			tileMap[e_y][e_x]->AddElement(element);
-			elements.push_back(element);
+				if (element != nullptr) {
+					element->SetPosition(e_x, e_y);
+					tileMap[e_y][e_x]->AddElement(element);
+					elements.push_back(element);
+				}
+			}
 		}
 	}
+
+	catch (const std::exception& e) {
+		OutputDebugString(L"Failed to parse stage info JSON\n");
+	}
+
+	file.close();
 
 	for (Element* ele : elements)
 		ele->SnapToCurrent();
 
 	UpdateRule();
+	
 }
 
 void Stage::Update()
 {
-	// 모든 요소 업데이트
 	for (auto& ele : elements)
 	{
-		// ele가 포인터라면 이렇게
 		if (auto* e = dynamic_cast<Element*>(ele)) {
 			e->Update();
 		}
 	}
-
-	//SearchRules();
-	//ApplyRules();
 }
 
 void Stage::UpdateRule()
@@ -202,7 +195,6 @@ void Stage::SearchRules()
 		int x = verb->GetX();
 		int y = verb->GetY();
 
-		// → 좌우 방향 검사
 		Text* left = GetTextAt(x - 1, y);
 		Text* right = GetTextAt(x + 1, y);
 
@@ -215,7 +207,6 @@ void Stage::SearchRules()
 			rules.push_back(make_unique<BasicRule>(left, verb, right, type));
 		}
 
-		// ↓ 상하 방향 검사
 		Text* up = GetTextAt(x, y - 1);
 		Text* down = GetTextAt(x, y + 1);
 
@@ -232,7 +223,7 @@ void Stage::SearchRules()
 
 void Stage::ApplyRules()
 {
-	for (const auto& rule : rules) // ✅ 참조로 고치면 복사 없음
+	for (const auto& rule : rules)
 		rule->Apply(*this);
 }
 
@@ -241,7 +232,7 @@ Text* Stage::GetTextAt(int x, int y)
 	for (Element* e : elements)
 	{
 		if (e->IsText() && e->GetX() == x && e->GetY() == y) {
-			return static_cast<Text*>(e); // IsText()로 검사했으니 안전
+			return static_cast<Text*>(e);
 		}
 	}
 	return nullptr;
@@ -262,7 +253,7 @@ void Stage::Render(const RenderContext& ctx)
     int tileAreaH = ctx.tileSize * (rows + 2);
 
 	SolidBrush* bgBrush = GameManager::getInstance().GetBackgroundBrush();
-    SolidBrush tileBg(Color(0, 0, 0)); // 검정색 배경
+    SolidBrush tileBg(Color(0, 0, 0));
     ctx.graphics->FillRectangle(&tileBg,
         ctx.offsetX, ctx.offsetY,
         tileAreaW, tileAreaH);
@@ -292,7 +283,6 @@ void Stage::Render(const RenderContext& ctx)
 		ele->Render(ctx);
 	}
 
-	// elements 중 You status를 가진 element를 다시 랜더링해서 제일 위에 오도록 설정
 	for (auto& ele : elements)
 	{
 		if (ele->HasStatus(ElementStatus::You))
@@ -328,7 +318,7 @@ Element* Stage::ReplaceElementWithType(Element* oldElem, MaterialType newType)
 
 	Element* newElem = GameManager::getInstance().CopyFromCatalog(newType);
 	newElem->SetPosition(x, y);
-	newElem->SnapToCurrent(); // 초기화 위치 맞추기
+	newElem->SnapToCurrent();
 	tile->AddElement(newElem);
 	AddElement(newElem);
 
@@ -337,7 +327,6 @@ Element* Stage::ReplaceElementWithType(Element* oldElem, MaterialType newType)
 
 bool Stage::CheckWinCondition()
 {
-	// 승리 조건 확인
 	vector<Element*> win_elements;
 	vector<Element*> you_elements;
 
@@ -349,7 +338,6 @@ bool Stage::CheckWinCondition()
 			you_elements.push_back(ele);
 	}
 
-	// win_element / you_element 사이즈 출력
 	wstring win_str = L"Win Element Size: " + to_wstring(win_elements.size()) + L"\n";
 	wstring you_str = L"You Element Size: " + to_wstring(you_elements.size()) + L"\n";
 	OutputDebugString(win_str.c_str());
@@ -368,8 +356,6 @@ bool Stage::CheckWinCondition()
 
 				if (you->GetX() == win->GetX() && you->GetY() == win->GetY())
 				{
-					// you와 win의 좌표 출력
-
 					OutputDebugString(L"Game Clear\n");
 					return true;
 				}

@@ -35,7 +35,6 @@ protected:
 	vector<ElementStatus> status = { ElementStatus::Push };
 	ElementStatus temp_status = ElementStatus::Push;
 	static Image* glow_effect;
-	//static set<Element*> all_elements;
 
 public:
 	Element(string _id, wstring _image_path, Color _color, ElementStatus _status = ElementStatus::None);
@@ -63,7 +62,6 @@ public:
 	void SnapToCurrent();
 	virtual bool IsAlwaysPushable() const { return false; }
 	virtual bool IsPushable() const;
-	//virtual bool IsPusher() const { return GetStatus() == ElementStatus::You; }
 	bool CanMove(int dx, int dy);
 	bool TryMove(int dx, int dy);
 	bool Move(int dx, int dy);

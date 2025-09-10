@@ -1,90 +1,91 @@
-#include <windows.h>
-#include <gdiplus.h>
-#include "GameManager.h"
+// 메모리 누수 검사  
+#ifdef _DEBUG  
+#define _CRTDBG_MAP_ALLOC  
+#include <crtdbg.h>  
+#include <stdlib.h>  
+#endif  
 
-#pragma comment(lib, "gdiplus.lib")
+#include <windows.h>  
+#include <gdiplus.h>  
+#include <iostream>  
+#include "GameManager.h"  
 
-// ������ ���ν��� �Լ� ����
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+#pragma comment(lib, "gdiplus.lib")  
 
-// WinMain: WinAPI ������
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-    // ������ Ŭ���� ����
-    const wchar_t CLASS_NAME[] = L"BabaWindowClass";
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);  
 
-    //ULONG_PTR gdiplusToken;
-    //Gdiplus::GdiplusStartupInput gdiInput;
-    //Gdiplus::GdiplusStartup(&gdiplusToken, &gdiInput, nullptr);
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {  
+    // 메모리 누수 검사 시작  
+    #ifdef _DEBUG
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);  
+    #endif  
 
-    WNDCLASS wc = {};
-    wc.lpfnWndProc = WndProc;              // �޽��� ó�� �Լ�
-    wc.hInstance = hInstance;
-    wc.lpszClassName = CLASS_NAME;
-    wc.hbrBackground = NULL;
-    //wc.hbrBackground = CreateSolidBrush(RGB(0, 255, 0)); // ���� ���
+    const wchar_t CLASS_NAME[] = L"BabaWindowClass";  
 
-    RegisterClass(&wc);
+    WNDCLASS wc = {};  
+    wc.lpfnWndProc = WndProc;              
+    wc.hInstance = hInstance;  
+    wc.lpszClassName = CLASS_NAME;  
+    wc.hbrBackground = NULL;  
 
-    GameManager& gm = GameManager::getInstance();
+    RegisterClass(&wc);  
 
-    // ������ ����
-    HWND hWnd = CreateWindowEx(
-        0,                          // Ȯ�� ��Ÿ��
-        CLASS_NAME,                 // Ŭ���� �̸�
-        L"Baba Is You",             // Ÿ��Ʋ
-        WS_OVERLAPPEDWINDOW,        // â ��Ÿ��
-        CW_USEDEFAULT, CW_USEDEFAULT, 1200, 800, // ��ġ & ũ��
-		nullptr, nullptr, hInstance, nullptr
-    );
+    GameManager& gm = GameManager::getInstance();  
 
-	gm.SetWindowHandle(hWnd);
+    HWND hWnd = CreateWindowEx(  
+        0,                          
+        CLASS_NAME,                  
+        L"Baba Is You",               
+        WS_OVERLAPPEDWINDOW,          
+        CW_USEDEFAULT, CW_USEDEFAULT, 1200, 800,   
+        nullptr, nullptr, hInstance, nullptr  
+    );  
 
-    if (hWnd == nullptr) {
-        return 0;
-    }
+    gm.SetWindowHandle(hWnd);  
 
-    // â �����ֱ�
-    ShowWindow(hWnd, nCmdShow);
-    gm.Init();
-    gm.Run();
-	gm.Shutdown();
+    if (hWnd == nullptr) {  
+        return 0;  
+    }  
 
-    //Gdiplus::GdiplusShutdown(gdiplusToken);
-    return 0;
-}
+    ShowWindow(hWnd, nCmdShow);  
+    gm.Init();  
+    gm.Run();  
+    gm.Shutdown();  
 
-// �޽��� ó�� �Լ�
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+    return 0;  
+}  
 
-    GameManager& gm = GameManager::getInstance();
-    switch (message)
-    {
-	case WM_CREATE:
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {  
 
-		break;
+    GameManager& gm = GameManager::getInstance();  
+    switch (message)  
+    {  
+    case WM_CREATE:  
 
-    case WM_KEYDOWN:
-        gm.HandleInput(wParam);
-        break;
+        break;  
 
-    case WM_PAINT: {
-        PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hWnd, &ps);
-        gm.Render(hdc, 100, 80);
-        EndPaint(hWnd, &ps);
-        break;
-    }
+    case WM_KEYDOWN:  
+        gm.HandleInput(wParam);  
+        break;  
 
-    case WM_DESTROY:
-        PostQuitMessage(0); // ���α׷� ����
-        break;
+    case WM_PAINT: {  
+        PAINTSTRUCT ps;  
+        HDC hdc = BeginPaint(hWnd, &ps);  
+        gm.Render(hdc, 100, 80);  
+        EndPaint(hWnd, &ps);  
+        break;  
+    }  
 
-    case WM_ERASEBKGND:
-        return 1; // �ý��� ��� ����� ���� (������ ���� + BitBlt �� ������)
+    case WM_DESTROY:  
+        PostQuitMessage(0);  
+        break;  
 
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
+    case WM_ERASEBKGND:  
+        return 1;  
 
-    return 0;
+    default:  
+        return DefWindowProc(hWnd, message, wParam, lParam);  
+    }  
+
+    return 0;  
 }

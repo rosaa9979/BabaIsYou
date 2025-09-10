@@ -28,8 +28,7 @@ public:
 	TextType GetTextType() const { return type; }
 	ElementStatus GetEffect() const;
 	string GetObjString() const;
-	virtual bool IsAlwaysPushable() const override { return true; } // �׻� �и� �� ����
-	//virtual bool IsPusher() const override { return true; }
+	virtual bool IsAlwaysPushable() const override { return true; } 
 	MaterialType ToMaterialType() const;
 	static MaterialType FromString(const string& name);
 	void Render(const RenderContext& ctx);

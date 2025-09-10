@@ -1,4 +1,3 @@
-// BasicRule.h
 #pragma once
 #include <string>
 #include "Rule.h"

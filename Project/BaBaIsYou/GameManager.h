@@ -57,6 +57,7 @@ public:
 	void Init();
 	void LoadStage();
 	void LoadElements();
+	void ClearElements();
 	void Run();
 	void Shutdown();
 	void Exit();
